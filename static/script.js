@@ -1,7 +1,7 @@
 const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
-const ws = new WebSocket("wss://50ed-2a02-8109-a181-7300-4d96-c47d-4765-957f.ngrok-free.app/ws"); // Replace with your ngrok URL
+const ws = new WebSocket("wss://promoted-fit-mako.ngrok-free.app/ws"); // Replace with your ngrok URL
 
 // Request camera access
 async function startCamera() {
