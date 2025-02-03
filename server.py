@@ -30,6 +30,8 @@ async def websocket_endpoint(websocket: WebSocket):
             image_data = base64.b64decode(data)
             np_arr = np.frombuffer(image_data, np.uint8)
             frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+            print(f"Received {len(data)} bytes from WebSocket")
+
 
              # Save the received image
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
