@@ -123,7 +123,7 @@ optimizer_G = optim.Adam(generator.parameters(), lr=0.0002, betas=(0.5, 0.999))
 optimizer_D = optim.Adam(discriminator.parameters(), lr=0.0002, betas=(0.5, 0.999))
 
 # Training loop
-num_epochs = 200
+num_epochs = 500
 for epoch in range(num_epochs):
     progress_bar = tqdm(enumerate(dataloader), total=len(dataloader))
     for i, (real_faces, real_legos) in progress_bar:
@@ -155,7 +155,7 @@ for epoch in range(num_epochs):
         progress_bar.set_description(f"Epoch [{epoch+1}/{num_epochs}] Loss D: {d_loss.item():.4f}, Loss G: {g_loss.item():.4f}")
     
     # Save sample output
-    if (epoch + 1) % 50 == 0:
+    if (epoch + 1) % 100 == 0:
         save_image(make_grid(fake_legos[:16], normalize=True), f"output_epoch_{epoch+1}.png")
 
 print("✅ Training complete!")
