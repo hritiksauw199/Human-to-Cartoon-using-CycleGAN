@@ -10,7 +10,7 @@ from PIL import Image
 from tqdm import tqdm
 
 # Set device
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
 
 # Dataset
 class FaceToLegoDataset(Dataset):
@@ -104,13 +104,20 @@ class Discriminator(nn.Module):
 class VGGFeatureLoss(nn.Module):
     def __init__(self):
         super(VGGFeatureLoss, self).__init__()
-        vgg = models.vgg16(pretrained=True).features[:8].to(device).eval()  # Use first few layers
+        vgg = models.vgg16(weights=models.VGG16_Weights.IMAGENET1K_V1).features[:8].eval()
         for param in vgg.parameters():
             param.requires_grad = False  # Freeze VGG weights
-        self.vgg = vgg
+        
+        self.vgg = vgg.to("mps")  # Load VGG on MPS
 
     def forward(self, x, y):
-        return torch.mean((self.vgg(x) - self.vgg(y)) ** 2)  # Mean Squared Error
+        x = x.to("mps")  # Ensure input is on MPS
+        y = y.to("mps")  # Ensure input is on MPS
+        return torch.mean((self.vgg(x) - self.vgg(y)) ** 2)  # Compute loss on MPS
+
+
+# Checking if it is training on MPS
+print(f"Using device: {device}")
 
 # Initialize models
 generator = Generator().to(device)
