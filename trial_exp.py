@@ -53,7 +53,7 @@ transform = transforms.Compose([
 
 # Load Dataset
 dataset = FaceToLegoDataset("./lego_ref_images/lg_cropped", "./lego_ref_images/og_cropped", transform=transform)
-dataloader = DataLoader(dataset, batch_size=8, shuffle=True)  # Reduced batch size to 4
+dataloader = DataLoader(dataset, batch_size=6, shuffle=True)  # Reduced batch size to 4
 
 # ====================
 # 📌 Residual Block with Instance Normalization (Reduced channels)
