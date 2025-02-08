@@ -133,75 +133,73 @@ d_scaler = torch.cuda.amp.GradScaler()
 # ====================
 # 📌 Training Loop
 # ====================
-num_epochs = 50
 
-for epoch in range(num_epochs):
-    progress_bar = tqdm(enumerate(dataloader), total=len(dataloader))
+torch.cuda.empty_cache()
 
-    for i, (zebra, horse) in progress_bar:
-        zebra, horse = zebra.to(device), horse.to(device)
-        batch_size = zebra.size(0)
+if __name__ == "__main__":
+    num_epochs = 200
 
-        # Discr
-        fake_horse = G_h(zebra)
-        fake_zebra = G_z(horse)  # A → B (Real Face → LEGO)
-        D_H_real = D_h(horse)
-        D_H_fake = D_h(horse.detach())
-        loss_D_B = criterion_GAN(D_H_real, torch.ones_like(D_H_real)) + criterion_GAN(D_H_fake, torch.zeros_like(D_H_fake))
+    for epoch in range(num_epochs):
+        progress_bar = tqdm(enumerate(dataloader), total=len(dataloader))
 
+        for i, (zebra, horse) in progress_bar:
+            zebra, horse = zebra.to(device), horse.to(device)
+            batch_size = zebra.size(0)
 
-        fake_zebra = G_z(horse)
-        D_Z_real = D_z(zebra)
-        D_Z_fake = D_z(fake_zebra.detach())
-        loss_D_A = criterion_GAN(D_Z_real, torch.ones_like(D_Z_real)) + criterion_GAN(D_Z_fake, torch.ones_like(D_H_fake))
-        
-        D_loss = (loss_D_A + loss_D_B) /2
-        
-        opt_disc.zero_grad()
-        d_scaler.scale(D_loss).backward()
-        d_scaler.step(opt_disc)
-        d_scaler.update()
-
-        #optimizer_D_A.zero_grad()
-        #loss_D_A.backward()
-        #optimizer_D_A.step()
+            # Discr
+            fake_horse = G_h(zebra)
+            fake_zebra = G_z(horse)  # A → B (Real Face → LEGO)
+            D_H_real = D_h(horse)
+            D_H_fake = D_h(horse.detach())
+            loss_D_B = criterion_GAN(D_H_real, torch.ones_like(D_H_real)) + criterion_GAN(D_H_fake, torch.zeros_like(D_H_fake))
 
 
+            fake_zebra = G_z(horse)
+            D_Z_real = D_z(zebra)
+            D_Z_fake = D_z(fake_zebra.detach())
+            loss_D_A = criterion_GAN(D_Z_real, torch.ones_like(D_Z_real)) + criterion_GAN(D_Z_fake, torch.ones_like(D_H_fake))
+            
+            D_loss = (loss_D_A + loss_D_B) /2
+            
+            opt_disc.zero_grad()
+            d_scaler.scale(D_loss).backward()
+            d_scaler.step(opt_disc)
+            d_scaler.update()
 
-        # Train Generators
+            #optimizer_D_A.zero_grad()
+            #loss_D_A.backward()
+            #optimizer_D_A.step()
 
-        # Generator loss
-        D_H_fake = D_h(fake_horse)
-        D_Z_fake = D_z(fake_zebra)
-        loss_G_H = criterion_GAN(D_H_fake, torch.ones_like(D_H_fake))  # Loss for Real → LEGO
-        loss_G_Z = criterion_GAN(D_Z_fake, torch.ones_like(D_Z_fake))  # Loss for LEGO → Real
-        
-        # cycle losses
-        loss_cycle_zebra = criterion_Cycle(zebra, G_z(fake_horse))  # Cycle consistency loss A → B → A
-        loss_cycle_horse = criterion_Cycle(horse, G_h(fake_zebra))  # Cycle consistency loss B → A → B
-        
-        #total loss
-        loss_G = loss_G_H + loss_G_Z + 10 * (loss_cycle_zebra + loss_cycle_horse)
+            # Train Generators
 
+            # Generator loss
+            D_H_fake = D_h(fake_horse)
+            D_Z_fake = D_z(fake_zebra)
+            loss_G_H = criterion_GAN(D_H_fake, torch.ones_like(D_H_fake))  # Loss for Real → LEGO
+            loss_G_Z = criterion_GAN(D_Z_fake, torch.ones_like(D_Z_fake))  # Loss for LEGO → Real
+            
+            # cycle losses
+            loss_cycle_zebra = criterion_Cycle(zebra, G_z(fake_horse))  # Cycle consistency loss A → B → A
+            loss_cycle_horse = criterion_Cycle(horse, G_h(fake_zebra))  # Cycle consistency loss B → A → B
+            
+            #total loss
+            loss_G = loss_G_H + loss_G_Z + 10 * (loss_cycle_zebra + loss_cycle_horse)
 
+            #optimizer_G.zero_grad()
+            #loss_G.backward()
+            #optimizer_G.step()
+            opt_gen.zero_grad()
+            g_scaler.scale(loss_G).backward()
+            g_scaler.step(opt_gen)
+            g_scaler.update()
 
-        #optimizer_G.zero_grad()
-        #loss_G.backward()
-        #optimizer_G.step()
-        opt_gen.zero_grad()
-        g_scaler.scale(loss_G).backward()
-        g_scaler.step(opt_gen)
-        g_scaler.update()
+            progress_bar.set_description(f"Epoch [{epoch+1}/{num_epochs}] Loss G: {loss_G.item():.4f} Loss D: {(loss_D_A.item() + loss_D_B.item()):.4f}")
 
-        progress_bar.set_description(f"Epoch [{epoch+1}/{num_epochs}] Loss G: {loss_G.item():.4f} Loss D: {(loss_D_A.item() + loss_D_B.item()):.4f}")
+        # 🎯 Display & Save results every 10 epochs
+        if (epoch + 1) % 50 == 0:
+            save_image(fake_horse[:8], f"./output/lego_epoch_{epoch+1}.png", normalize=True)  # LEGO generated from Real Faces
+            save_image(fake_zebra[:8], f"./output/reconstructed_epoch_{epoch+1}.png", normalize=True)  # Reconstructed Real Faces from LEGO
 
-    # 🎯 Display & Save results every 10 epochs
-    if (epoch + 1) % 10 == 0:
-        save_image(fake_horse[:8], f"./output/lego_epoch_{epoch+1}.png", normalize=True)  # LEGO generated from Real Faces
-        save_image(fake_zebra[:8], f"./output/reconstructed_epoch_{epoch+1}.png", normalize=True)  # Reconstructed Real Faces from LEGO
-
-print("Training complete! Models saved.")
-
-
-torch.save(G_h.state_dict(), "generator_face_to_lego.pth")
-torch.save(G_z.state_dict(), "generator_lego_to_face.pth")
+    torch.save(G_h.state_dict(), "generator_face_to_lego.pth")
+    torch.save(G_z.state_dict(), "generator_lego_to_face.pth")
+    print("Training complete! Models saved.")
