@@ -6,7 +6,6 @@ import torchvision.transforms as transforms
 from torch.utils.data import Dataset, DataLoader
 from torchvision.utils import save_image, make_grid
 from PIL import Image
-import itertools
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
@@ -57,27 +56,37 @@ dataset = FaceToLegoDataset("./lego_ref_images/lg_cropped", "./lego_ref_images/o
 dataloader = DataLoader(dataset, batch_size=8, shuffle=True)
 
 # ====================
-# 📌 Residual Block with Instance Normalization
+# 📌 Optimized Convolutional and Residual Blocks
 # ====================
-class ResidualBlock(nn.Module):
-    def __init__(self, in_channels, out_channels):
-        super(ResidualBlock, self).__init__()
-        self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=1, padding=1)
-        self.bn1 = nn.InstanceNorm2d(out_channels)  # Use InstanceNorm
-        self.relu = nn.ReLU(inplace=True)
-        self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=3, stride=1, padding=1)
-        self.bn2 = nn.InstanceNorm2d(out_channels)  # Use InstanceNorm
-        
-        self.skip = nn.Conv2d(in_channels, out_channels, kernel_size=1, stride=1, padding=0) if in_channels != out_channels else nn.Identity()
+class ConvolutionalBlock(nn.Module):
+    def __init__(self, in_channels: int, out_channels: int, is_downsampling: bool = True, add_activation: bool = True, **kwargs):
+        super().__init__()
+        if is_downsampling:
+            self.conv = nn.Sequential(
+                nn.Conv2d(in_channels, out_channels, padding_mode="reflect", **kwargs),
+                nn.InstanceNorm2d(out_channels),
+                nn.ReLU(inplace=True) if add_activation else nn.Identity(),
+            )
+        else:
+            self.conv = nn.Sequential(
+                nn.ConvTranspose2d(in_channels, out_channels, **kwargs),
+                nn.InstanceNorm2d(out_channels),
+                nn.ReLU(inplace=True) if add_activation else nn.Identity(),
+            )
 
     def forward(self, x):
-        residual = self.skip(x)
-        x = self.relu(self.bn1(self.conv1(x)))
-        x = self.bn2(self.conv2(x))
-        x += residual  # Add the residual connection
-        return self.relu(x)
+        return self.conv(x)
+    
+class ResidualBlock(nn.Module):
+    def __init__(self, channels: int):
+        super().__init__()
+        self.block = nn.Sequential(
+            ConvolutionalBlock(channels, channels, add_activation=True, kernel_size=3, padding=1),
+            ConvolutionalBlock(channels, channels, add_activation=False, kernel_size=3, padding=1),
+        )
 
-
+    def forward(self, x):
+        return x + self.block(x)
 
 # ====================
 # 📌 Generator (U-Net with Residual Blocks and Instance Normalization)
@@ -85,26 +94,22 @@ class ResidualBlock(nn.Module):
 class Generator(nn.Module):
     def __init__(self):
         super(Generator, self).__init__()
+
+        # Encoder: Increase channel depth
         self.encoder = nn.Sequential(
             nn.Conv2d(3, 64, kernel_size=7, stride=1, padding=3),
             nn.InstanceNorm2d(64),
             nn.ReLU(),
-            #nn.Conv2d(64, 128, kernel_size=3, stride=2, padding=1),
-            #nn.InstanceNorm2d(128),
-            #nn.ReLU(),
-            #nn.Conv2d(128, 256, kernel_size=3, stride=2, padding=1),
-            #nn.InstanceNorm2d(256),
-            #nn.ReLU()
-            ResidualBlock(64, 128),
-            ResidualBlock(128, 256)
+            ConvolutionalBlock(64, 128, is_downsampling=True, kernel_size=3, padding=1),
+            ConvolutionalBlock(128, 256, is_downsampling=True, kernel_size=3, padding=1),
+            ResidualBlock(256),
+            ResidualBlock(256),
         )
+
+        # Decoder: Decrease channel depth
         self.decoder = nn.Sequential(
-            nn.ConvTranspose2d(256, 128, kernel_size=3, stride=2, padding=1, output_padding=1),
-            nn.InstanceNorm2d(128),
-            nn.ReLU(),
-            nn.ConvTranspose2d(128, 64, kernel_size=3, stride=2, padding=1, output_padding=1),
-            nn.InstanceNorm2d(64),
-            nn.ReLU(),
+            ConvolutionalBlock(256, 128, is_downsampling=False, kernel_size=3, padding=1),
+            ConvolutionalBlock(128, 64, is_downsampling=False, kernel_size=3, padding=1),
             nn.Conv2d(64, 3, kernel_size=7, stride=1, padding=3),
             nn.Tanh()
         )
@@ -112,6 +117,7 @@ class Generator(nn.Module):
     def forward(self, x):
         x = self.encoder(x)
         return self.decoder(x)
+
 
 # ====================
 # 📌 Discriminator (PatchGAN with Instance Normalization)
@@ -165,7 +171,6 @@ d_scaler = torch.cuda.amp.GradScaler()
 # ====================
 # 📌 Training Loop
 # ====================
-
 torch.cuda.empty_cache()
 
 if __name__ == "__main__":
