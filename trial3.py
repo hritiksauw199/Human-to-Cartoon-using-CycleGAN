@@ -45,6 +45,7 @@ class FaceToLegoDataset(Dataset):
 transform = transforms.Compose([
     transforms.Resize((64, 64)),  # Reduced resolution to 64x64
     transforms.RandomHorizontalFlip(),
+    transforms.RandomVerticalFlip(),
     transforms.RandomRotation(10),
     transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.05),
     transforms.ToTensor(),
@@ -53,7 +54,7 @@ transform = transforms.Compose([
 
 # Load Dataset
 dataset = FaceToLegoDataset("./lego_ref_images/lg_cropped", "./lego_ref_images/og_cropped", transform=transform)
-dataloader = DataLoader(dataset, batch_size=8, shuffle=True)  # Reduced batch size to 4
+dataloader = DataLoader(dataset, batch_size=6, shuffle=True)  # Reduced batch size to 4
 
 # ====================
 # 📌 Residual Block with Instance Normalization (Reduced channels)
@@ -83,48 +84,53 @@ class Generator(nn.Module):
     def __init__(self):
         super(Generator, self).__init__()
         self.encoder = nn.Sequential(
-            nn.Conv2d(3, 32, kernel_size=7, stride=1, padding=3),  # Reduced channels
-            nn.InstanceNorm2d(32),
+            nn.Conv2d(3, 64, kernel_size=7, stride=1, padding=3),  # Increased channels
+            nn.InstanceNorm2d(64),
             nn.ReLU(),
-            ResidualBlock(32, 64),
-            ResidualBlock(64, 128)
+            ResidualBlock(64, 128),
+            ResidualBlock(128, 256),
+            ResidualBlock(256, 512)  # Added more residual blocks
         )
         self.decoder = nn.Sequential(
+            nn.ConvTranspose2d(512, 256, kernel_size=3, stride=2, padding=1, output_padding=1),
+            nn.InstanceNorm2d(256),
+            nn.ReLU(),
+            nn.ConvTranspose2d(256, 128, kernel_size=3, stride=2, padding=1, output_padding=1),
+            nn.InstanceNorm2d(128),
+            nn.ReLU(),
             nn.ConvTranspose2d(128, 64, kernel_size=3, stride=2, padding=1, output_padding=1),
             nn.InstanceNorm2d(64),
             nn.ReLU(),
-            nn.ConvTranspose2d(64, 32, kernel_size=3, stride=2, padding=1, output_padding=1),
-            nn.InstanceNorm2d(32),
-            nn.ReLU(),
-            nn.Conv2d(32, 3, kernel_size=7, stride=1, padding=3),
+            nn.Conv2d(64, 3, kernel_size=7, stride=1, padding=3),
             nn.Tanh()
         )
 
     def forward(self, x):
         x = self.encoder(x)
         x = self.decoder(x)
-
-        # Ensure the output size is the same as input (64x64)
         x = nn.functional.interpolate(x, size=(64, 64), mode='bilinear', align_corners=False)
         return x
 
 # ====================
-# 📌 Discriminator (Simplified model with reduced channels)
+# 📌 Enhanced Discriminator with More Layers
 # ====================
 class Discriminator(nn.Module):
     def __init__(self):
         super(Discriminator, self).__init__()
         self.model = nn.Sequential(
-            nn.Conv2d(3, 32, kernel_size=4, stride=2, padding=1),  # Reduced channels
-            nn.LeakyReLU(0.2),
-            nn.InstanceNorm2d(32),
-            nn.Conv2d(32, 64, kernel_size=4, stride=2, padding=1),
+            nn.Conv2d(3, 64, kernel_size=4, stride=2, padding=1),  # Increased channels
             nn.LeakyReLU(0.2),
             nn.InstanceNorm2d(64),
             nn.Conv2d(64, 128, kernel_size=4, stride=2, padding=1),
             nn.LeakyReLU(0.2),
             nn.InstanceNorm2d(128),
-            nn.Conv2d(128, 1, kernel_size=4, stride=1, padding=1),
+            nn.Conv2d(128, 256, kernel_size=4, stride=2, padding=1),
+            nn.LeakyReLU(0.2),
+            nn.InstanceNorm2d(256),
+            nn.Conv2d(256, 512, kernel_size=4, stride=2, padding=1),  # Additional layer
+            nn.LeakyReLU(0.2),
+            nn.InstanceNorm2d(512),
+            nn.Conv2d(512, 1, kernel_size=4, stride=1, padding=1),
             nn.Sigmoid()
         )
 
@@ -215,7 +221,7 @@ if __name__ == "__main__":
             progress_bar.set_description(f"Epoch [{epoch+1}/{num_epochs}] Loss G: {loss_G.item():.4f} Loss D: {(loss_D_A.item() + loss_D_B.item()):.4f}")
 
         # 🎯 Display & Save results every 10 epochs
-        if (epoch + 1) % 10 == 0:
+        if (epoch + 1) % 5 == 0:
             save_image(fake_horse[:16], f"./output/lego_epoch_{epoch+1}.png", normalize=True)
             save_image(fake_zebra[:16], f"./output/reconstructed_epoch_{epoch+1}.png", normalize=True)
         
