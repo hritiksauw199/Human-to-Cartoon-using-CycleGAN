@@ -45,15 +45,18 @@ class FaceToLegoDataset(Dataset):
 transform = transforms.Compose([
     transforms.Resize((64, 64)),  # Reduced resolution to 64x64
     transforms.RandomHorizontalFlip(),
+    transforms.RandomVerticalFlip(),
     transforms.RandomRotation(10),
     transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.05),
     transforms.ToTensor(),
     transforms.Normalize((0.5,), (0.5,))
 ])
 
+
 # Load Dataset
-dataset = FaceToLegoDataset("./lego_ref_images/lg_cropped", "./lego_ref_images/og_cropped", transform=transform)
-dataloader = DataLoader(dataset, batch_size=6, shuffle=True)  # Reduced batch size to 4
+#dataset = FaceToLegoDataset("./lego_ref_images/lg_cropped", "./lego_ref_images/og_cropped", transform=transform)
+dataset = FaceToLegoDataset("./augmented/aug_lg", "./augmented/aug_og", transform=transform)
+dataloader = DataLoader(dataset, batch_size=4, shuffle=True)  # Reduced batch size to 4
 
 # ====================
 # 📌 Residual Block with Instance Normalization (Reduced channels)
@@ -162,7 +165,7 @@ d_scaler = torch.cuda.amp.GradScaler()
 # 📌 Training Loop with Gradient Accumulation
 # ====================
 if __name__ == "__main__":
-    num_epochs = 20
+    num_epochs = 50
     accumulation_steps = 4  # Accumulate gradients over 4 mini-batches
 
     for epoch in range(num_epochs):
