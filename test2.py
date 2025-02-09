@@ -1,53 +1,68 @@
 import torch
-from torchvision.utils import save_image
-import os
+from torchvision import transforms
 from PIL import Image
-import torchvision.transforms as transforms
+import matplotlib.pyplot as plt
 from trial2 import Generator
 
 # ====================
-# 📌 Load the Trained Generator
+# 📌 Load the Saved Model Weights
 # ====================
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-G = Generator().to(device)
-G.load_state_dict(torch.load("generator_face_to_lego.pth"))  # Load the trained model
-G.eval()  # Set the model to evaluation mode
+
+# Initialize the generator models
+G_h = Generator().to(device)  # Real Face → LEGO
+G_z = Generator().to(device)  # LEGO → Real Face
+
+# Load the saved weights
+G_h.load_state_dict(torch.load("generator_face_to_lego.pth"))
+G_z.load_state_dict(torch.load("discriminator.pth"))
+G_h.eval()
+G_z.eval()
 
 # ====================
-# 📌 Test Data Preparation (For example, single test image)
+# 📌 Image Preprocessing (same as training)
 # ====================
 transform = transforms.Compose([
-    transforms.Resize((64, 64)),
+    transforms.Resize((64, 64)),  # Resize to 64x64
     transforms.ToTensor(),
-    transforms.Normalize((0.5,), (0.5,))
+    transforms.Normalize((0.5,), (0.5,))  # Normalize like training
 ])
 
-# Function to load and preprocess a test image
-def load_test_image(image_path):
-    image = Image.open(image_path).convert("RGB")
-    image = transform(image).unsqueeze(0).to(device)  # Add batch dimension and send to device
-    return image
+def preprocess_image(image_path):
+    # Load image
+    img = Image.open(image_path).convert("RGB")
+    
+    # Apply transformations
+    img = transform(img)
+    
+    # Add batch dimension (1 image in batch)
+    img = img.unsqueeze(0).to(device)
+    
+    return img
 
-# Example of testing with a single image (adjust the path as needed)
+# ====================
+# 📌 Test the Model on a New Image
+# ====================
+def test_model(image_path):
+    # Preprocess the image
+    img = preprocess_image(image_path)
+    
+    # Pass through the generator to get the output
+    with torch.no_grad():  # No need to compute gradients for testing
+        generated_image = G_h(img)  # Real Face → LEGO (you can swap with G_z if testing the reverse)
+    
+    # Post-process the image
+    generated_image = generated_image.squeeze(0).cpu()  # Remove batch dimension
+    generated_image = generated_image * 0.5 + 0.5  # Denormalize to [0, 1]
+    
+    # Convert to a PIL Image for display
+    generated_image = transforms.ToPILImage()(generated_image)
+    
+    # Display the result
+    plt.imshow(generated_image)
+    plt.axis("off")
+    plt.show()
+
+# Example: Test with a new image
 test_image_path = "image.png"  # Replace with your test image path
-test_image = load_test_image(test_image_path)
-
-# ====================
-# 📌 Generate LEGO-style Image
-# ====================
-with torch.no_grad():  # Disable gradient calculation for testing
-    generated_image = G(test_image)  # Pass the test image through the generator
-
-# ====================
-# 📌 Save or Visualize the Result
-# ====================
-save_image(generated_image, "generated_lego_image.png", normalize=True)  # Save the output image
-
-# Or if you want to visualize the image using matplotlib
-import matplotlib.pyplot as plt
-generated_image = generated_image.squeeze(0).cpu().numpy().transpose(1, 2, 0)  # Convert to HWC format
-generated_image = (generated_image + 1) / 2  # Denormalize the image
-
-plt.imshow(generated_image)
-plt.axis('off')  # Turn off axis
-plt.show()
+test_model(test_image_path)

@@ -6,7 +6,7 @@ import torchvision.transforms as transforms
 from torch.utils.data import Dataset, DataLoader
 from torchvision.utils import save_image
 from PIL import Image
-import gc  # Garbage collection to free memory
+import gc
 from tqdm import tqdm
 
 # ====================
@@ -161,6 +161,7 @@ opt_gen = optim.Adam(
 g_scaler = torch.cuda.amp.GradScaler()
 d_scaler = torch.cuda.amp.GradScaler()
 
+
 # ====================
 # 📌 Training Loop with Gradient Accumulation
 # ====================
@@ -211,9 +212,6 @@ if __name__ == "__main__":
                 g_scaler.step(opt_gen)
                 g_scaler.update()
 
-            # Free memory
-            #del fake_horse, fake_zebra, D_H_real, D_H_fake, D_Z_real, D_Z_fake
-            gc.collect()
 
             progress_bar.set_description(f"Epoch [{epoch+1}/{num_epochs}] Loss G: {loss_G.item():.4f} Loss D: {(loss_D_A.item() + loss_D_B.item()):.4f}")
 
