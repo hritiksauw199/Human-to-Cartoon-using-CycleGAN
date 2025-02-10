@@ -1,7 +1,7 @@
 import torch
 from PIL import Image
 import torchvision.transforms as transforms
-from trial import Generator
+from cyclegan.trial import Generator
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
