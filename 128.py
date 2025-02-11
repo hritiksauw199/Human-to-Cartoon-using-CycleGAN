@@ -221,3 +221,87 @@ for epoch in range(num_epochs):
             show_images(real_face, fake_lego, epoch)
 
 print("Training complete! Images saved in 'output/' folder.")
+
+
+
+
+
+
+
+
+
+
+
+
+
+#if (epoch + 1) % 5 == 0:
+        #with torch.no_grad():
+            #fake_lego = G_h(real_face)  # Generate the LEGO image from the real face
+            #fake_face = G_z(real_lego)  # Cycle consistency part
+
+            #save_image(fake_lego * 0.5 + 0.5, f"./output/fake_lego_epoch_{epoch+1}.png")
+            #save_image(fake_face * 0.5 + 0.5, f"./output/fake_face_epoch_{epoch+1}.png")
+
+        #show_images(real_face, fake_lego, epoch)
+
+
+
+G_h = Generator().to(device)
+checkpoint = torch.load("./checkpoints/train/best_checkpoint.pth", map_location=device)
+G_h.load_state_dict(checkpoint['G_h_state_dict'])
+G_h.eval()  # Set to evaluation mode
+
+# ====================
+# 📌 Load 10 Random Human Images
+# ====================
+human_folder = "./dataset/human"
+human_images = random.sample(os.listdir(human_folder), 10)  # Pick 10 random images
+
+transform = transforms.Compose([
+    transforms.Resize((128, 128)),
+    transforms.ToTensor(),
+    transforms.Normalize((0.5,), (0.5,))  # Same normalization as training
+])
+
+real_faces = []
+for img_name in human_images:
+    img = Image.open(os.path.join(human_folder, img_name)).convert("RGB")
+    img = transform(img)
+    real_faces.append(img)
+
+real_faces = torch.stack(real_faces).to(device)  # Convert list to tensor batch
+
+# ====================
+# 📌 Generate LEGO Images
+# ====================
+with torch.no_grad():  # No need to calculate gradients
+    fake_legos = G_h(real_faces)
+
+# ====================
+# 📌 Denormalize Function
+# ====================
+def denorm(tensor):
+    return tensor * 0.5 + 0.5  # Reverse normalization
+
+# ====================
+# 📌 Show Images in Grid (5x2)
+# ====================
+real_faces = denorm(real_faces).cpu()
+fake_legos = denorm(fake_legos).cpu()
+
+fig, axes = plt.subplots(5, 2, figsize=(10, 15))  # 5 rows, 2 columns
+
+for i in range(5):
+    # Real Face
+    axes[i, 0].imshow(real_faces[i].permute(1, 2, 0))  # Convert to (H, W, C)
+    #axes[i, 0].set_title("Real Face")
+    axes[i, 0].axis("off")
+
+    # Generated LEGO
+    axes[i, 1].imshow(fake_legos[i].permute(1, 2, 0))
+    #axes[i, 1].set_title("Generated LEGO")
+    axes[i, 1].axis("off")
+
+plt.tight_layout()
+plt.savefig("output_grid.png")  # Save output
+plt.show()  # Show grid

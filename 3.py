@@ -1,3 +1,4 @@
+
 import os
 import torch
 import torch.nn as nn
@@ -9,6 +10,7 @@ from PIL import Image
 import random
 from tqdm import tqdm
 import matplotlib.pyplot as plt
+from torch.nn.utils import spectral_norm
 
 # ====================
 # 📌 Check GPU
@@ -16,9 +18,6 @@ import matplotlib.pyplot as plt
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("Using device:", device)
 
-# ====================
-# 📌 Dataset Preparation
-# ====================
 class FaceToLegoDataset(Dataset):
     def __init__(self, og_folder, lg_folder, transform=None):
         self.og_folder = og_folder
@@ -33,9 +32,6 @@ class FaceToLegoDataset(Dataset):
     def __getitem__(self, idx):
         og_img_name = random.choice(self.og_images)
         lg_img_name = random.choice(self.lg_images)
-
-        #og_img_name = self.og_images[idx % len(self.og_images)]
-        #lg_img_name = self.lg_images[idx % len(self.lg_images)]
 
         og_image = Image.open(os.path.join(self.og_folder, og_img_name)).convert("RGB")
         lg_image = Image.open(os.path.join(self.lg_folder, lg_img_name)).convert("RGB")
@@ -104,19 +100,16 @@ class PatchGANDiscriminator(nn.Module):
     def __init__(self):
         super(PatchGANDiscriminator, self).__init__()
         self.model = nn.Sequential(
-            nn.Conv2d(3, 64, kernel_size=4, stride=2, padding=1),
-            nn.LeakyReLU(0.2, inplace=True),
+            nn.Conv2d(3, 64, kernel_size=4, stride=2, padding=1),  # Increased filter size
+            nn.LeakyReLU(0.2),
             nn.Conv2d(64, 128, kernel_size=4, stride=2, padding=1),
-            nn.InstanceNorm2d(128),
-            nn.LeakyReLU(0.2, inplace=True),
+            nn.LeakyReLU(0.2),
             nn.Conv2d(128, 256, kernel_size=4, stride=2, padding=1),
-            nn.InstanceNorm2d(256),
-            nn.LeakyReLU(0.2, inplace=True),
+            nn.LeakyReLU(0.2),
             nn.Conv2d(256, 512, kernel_size=4, stride=2, padding=1),
-            nn.InstanceNorm2d(512),
-            nn.LeakyReLU(0.2, inplace=True),
+            nn.LeakyReLU(0.2),
             nn.Conv2d(512, 1, kernel_size=4, stride=1, padding=1),
-            nn.Sigmoid()  # No Sigmoid
+            nn.Sigmoid()
         )
 
     def forward(self, x):
@@ -190,7 +183,6 @@ class ResidualBlock(nn.Module):
         self.conv1 = nn.Conv2d(in_channels, in_channels, kernel_size=3, stride=1, padding=1)
         self.bn1 = nn.InstanceNorm2d(in_channels)
         self.relu = nn.ReLU(inplace=True)
-        #self.drop = nn.Dropout(0.2)
         self.conv2 = nn.Conv2d(in_channels, in_channels, kernel_size=3, stride=1, padding=1)
         self.bn2 = nn.InstanceNorm2d(in_channels)
 
@@ -214,10 +206,8 @@ D_h.apply(weights_init)
 D_z.apply(weights_init)
 
 # Loss and Optimizers
-#criterion_GAN = nn.MSELoss()
 criterion_GAN = nn.MSELoss()
 criterion_Cycle = nn.L1Loss()
-criterion_identity = nn.L1Loss()
 
 opt_disc = optim.Adam(list(D_h.parameters()) + list(D_z.parameters()), lr=0.0002, betas=(0.5, 0.999), weight_decay=1e-3)
 opt_gen = optim.Adam(list(G_z.parameters()) + list(G_h.parameters()), lr=0.0002, betas=(0.5, 0.999), weight_decay=1e-3)
@@ -252,7 +242,7 @@ def save_best_checkpoint(epoch, G_loss, D_loss):
 # 📌 Training Loop
 # ====================
 
-num_epochs = 1  # Set your desired number of epochs
+num_epochs = 5  # Set your desired number of epochs
 
 def lambda_rule(epoch):
     decay_start_epoch = num_epochs // 2  # Start decaying at halfway point
@@ -288,15 +278,9 @@ for epoch in range(num_epochs):
         # =========================
         # 2️⃣ Generator Update
         # =========================
-        #G_loss = criterion_GAN(D_h(G_h(real_face)), torch.ones_like(D_h(real_face))) + criterion_GAN(D_z(G_z(real_lego)), torch.ones_like(D_z(real_lego)))
-        #G_loss += 5 * (criterion_Cycle(real_face, G_z(G_h(real_face))) + criterion_Cycle(real_lego, G_h(G_z(real_lego))))
-        loss_identity_h = criterion_identity(G_h(real_lego), real_lego)
-        loss_identity_z = criterion_identity(G_z(real_face), real_face)
-
         G_loss = criterion_GAN(D_h(G_h(real_face)), torch.ones_like(D_h(real_face))) + criterion_GAN(D_z(G_z(real_lego)), torch.ones_like(D_z(real_lego)))
-        G_loss += 5 * (criterion_Cycle(real_face, G_z(G_h(real_face))) + criterion_Cycle(real_lego, G_h(G_z(real_lego))))
-        #G_loss += 0.5 * (loss_identity_h + loss_identity_z)
-
+        G_loss += 10 * (criterion_Cycle(real_face, G_z(G_h(real_face))) + criterion_Cycle(real_lego, G_h(G_z(real_lego))))
+        
         opt_gen.zero_grad()
         G_loss.backward()
         opt_gen.step()
@@ -347,7 +331,7 @@ for i in range(5):
             axes[i, j * 2 + 1].axis("off")
 
 plt.tight_layout()
-plt.savefig("./output/generated_grid_try.png")
+plt.savefig("./output/generated_grid_try3.png")
 plt.show()
 
 

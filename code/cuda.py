@@ -1,5 +1,6 @@
 import torch
 
+print(torch.__version__)
 # Check if CUDA (NVIDIA GPU) is available
 print(torch.cuda.is_available())
 
