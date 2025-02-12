@@ -8,8 +8,8 @@ from torchvision.utils import save_image
 from PIL import Image
 
 # Set input/output folders
-input_folder = "./lego_ref_images/og_cropped"  # Change to "lg" for LEGO dataset
-output_folder = "./augmented/aug_og"  
+input_folder = "./dataset/cartoons_without_glasses"  # Source dataset
+output_folder = './dataset/cartoons_aug'  # Augmented dataset
 os.makedirs(output_folder, exist_ok=True)
 
 # Function to apply Gaussian Blur manually (since torchvision doesn't support it in Torch 1.5)
@@ -29,7 +29,7 @@ def augment_image(image):
     ])
     return transform(image)
 
-num_augments = 20  # Number of new images per original
+num_augments = 1  # Number of new images per original
 
 for filename in os.listdir(input_folder):
     img_path = os.path.join(input_folder, filename)

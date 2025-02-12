@@ -10,7 +10,6 @@ from PIL import Image
 import random
 from tqdm import tqdm
 import matplotlib.pyplot as plt
-from torch.optim.lr_scheduler import LambdaLR
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -70,7 +69,7 @@ class Generator(nn.Module):
     def __init__(self):
         super(Generator, self).__init__()
 
-        # Downsampling
+        # Encoder
         self.encoder = nn.Sequential(
             nn.Conv2d(3, 64, kernel_size=7, stride=1, padding=3),  # c7s1-64
             nn.InstanceNorm2d(64),
@@ -89,9 +88,11 @@ class Generator(nn.Module):
             ResidualBlock(256),  # R256
             ResidualBlock(256),  # R256
             ResidualBlock(256)  # R256
+            #ResidualBlock(256),  # R256
+            #ResidualBlock(256)   # R256
         )
 
-        # Upsampling
+        # Decoder
         self.decoder = nn.Sequential(
             nn.ConvTranspose2d(256, 128, kernel_size=3, stride=2, padding=1, output_padding=1),  # u128
             nn.InstanceNorm2d(128),
@@ -120,17 +121,17 @@ class PatchGANDiscriminator(nn.Module):
 
             # d128
             nn.Conv2d(64, 128, kernel_size=4, stride=2, padding=1),  # (64 -> 128 filters)
-            nn.BatchNorm2d(128),
+            nn.InstanceNorm2d(128),
             nn.LeakyReLU(0.2),
 
             # d256
             nn.Conv2d(128, 256, kernel_size=4, stride=2, padding=1),  # (128 -> 256 filters)
-            nn.BatchNorm2d(256),
+            nn.InstanceNorm2d(256),
             nn.LeakyReLU(0.2),
 
             # d512
             nn.Conv2d(256, 512, kernel_size=4, stride=2, padding=1),  # (256 -> 512 filters)
-            nn.BatchNorm2d(512),
+            nn.InstanceNorm2d(512),
             nn.LeakyReLU(0.2),
 
             # Final output (single channel: real or fake)
@@ -159,19 +160,6 @@ opt_gen = optim.Adam(list(G_lego.parameters()) + list(G_face.parameters()), lr=0
 scaler_G = torch.cuda.amp.GradScaler()
 scaler_D = torch.cuda.amp.GradScaler()
 
-def linear_lr_lambda(epoch, total_epochs, start_decay_epoch):
-    """ Linearly decays LR after 'start_decay_epoch' until total_epochs. """
-    if epoch < start_decay_epoch:
-        return 1.0  # Keep learning rate constant
-    else:
-        return 1.0 - (epoch - start_decay_epoch) / (total_epochs - start_decay_epoch)
-    
-num_epochs = 4
-start_decay_epoch = 2
-    
-scheduler_G = LambdaLR(opt_gen, lr_lambda=lambda epoch: linear_lr_lambda(epoch, num_epochs, start_decay_epoch))
-scheduler_D = LambdaLR(opt_disc, lr_lambda=lambda epoch: linear_lr_lambda(epoch, num_epochs, start_decay_epoch))
-    
 # ====================
 # 📌 Checkpoint Management
 # ====================
@@ -202,6 +190,8 @@ def save_best_checkpoint(epoch, G_loss, D_loss):
 D_lego_loss = []
 D_face_loss = []
 G_loss_data = []
+
+num_epochs = 80
 
 for epoch in range(num_epochs):
     progress_bar = tqdm(enumerate(dataloader), total=len(dataloader), desc=f"Epoch {epoch+1}/{num_epochs}")
@@ -249,15 +239,11 @@ for epoch in range(num_epochs):
         scaler_G.step(opt_gen)
         scaler_G.update()
 
-
         progress_bar.set_postfix(D_loss=D_loss.item(), G_loss=G_loss.item())
 
     D_lego_loss.append(loss_D_lego.item())
     D_face_loss.append(loss_D_face.item())
     G_loss_data.append(G_loss.item())
-    
-    scheduler_G.step()
-    scheduler_D.step()
 
     save_best_checkpoint(epoch + 1, G_loss, D_loss)
 
@@ -305,7 +291,7 @@ for i in range(5):
             axes[i, j * 2 + 1].axis("off")
 
 plt.tight_layout()
-plt.savefig("./output/generated_mini1.png")
+plt.savefig("./output/generated_grid_e80.png")
 plt.show()
 
 plt.figure(figsize=(10, 5))
@@ -318,7 +304,9 @@ plt.title("Discriminator and Generator Losses Over Epochs")
 plt.legend()
 plt.grid(True)
 plt.tight_layout()
+plt.savefig('loss_plot_final.png')
 plt.show()
+
 
 
 print("Done")

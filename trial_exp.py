@@ -224,3 +224,5 @@ if __name__ == "__main__":
     torch.save(G_z.state_dict(), "generator_lego_to_face.pth")
 
     print("Training complete!")
+
+
