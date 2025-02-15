@@ -54,33 +54,46 @@ A fundamental aspect of CycleGAN is its **cycle consistency loss**, which enforc
 
 To improve efficiency and performance, our implementation reduces the number of residual blocks from 6 to 4, speeding up training while maintaining quality. We also avoid using a learning rate scheduler to simplify training dynamics. Additionally, mixed-precision training with gradient scaling is employed to optimize GPU memory usage and accelerate computations. These enhancements contribute to a more stable and effective CycleGAN model, making it well-suited for high-quality image translation.
 
-## Generator
+## 📌 Generator
 ![generator png](https://github.com/user-attachments/assets/3e95ccab-a6e0-4d9f-9d7a-2ba695c407d9)
 
 
 ## Discriminator
 ![decoder png](https://github.com/user-attachments/assets/2ddb5aea-4d65-47ac-a45a-2b6d8a0a1b8e)
 
-*(More sections to be added later, such as Implementation, Technologies Used, Dataset, etc.)* 📌
+---
+
+## 📌 Loss Function 
+
+**Criterion for GAN Loss:** Using Mean Squared Error (MSE) loss to measure the difference between generated images and real images.<br>
+
+**Cycle Consistency Loss:** L1 Loss ensures that when the model maps a cartoon back to a face, it should resemble the original face.<br>
+
+**Identity Loss:** Another L1 Loss to ensure identity preservation between images (e.g., when a face image is passed through the cartoon generator, it should stay consistent)<br>
+---
+## 📌 Optimizer
+
+**Adam Optimizer for Discriminators:** Optimizes both discriminators (D_cartoon and D_face) with learning rate 0.0002 and betas (0.5, 0.999) for smoother updates.
+
+**Adam Optimizer for Generators:** Optimizes both generators (G_cartoon and G_face) with the same parameters as discriminators for balanced updates.
+
+**Automatic Mixed Precision:**
+**Grad Scalers for Generators and Discriminators:** Uses AMP for faster training with less memory usage on GPUs by scaling gradients to avoid overflow during backpropagation.
+---
+## 📌 Challenges
+### with weights<br>
+![WhatsApp Image 2025-02-13 at 14 45 15_c72aee96](https://github.com/user-attachments/assets/926184fb-f390-4e9b-bfaa-cb683f71d1a4)
+
+### using linear schedular<br>
+![WhatsApp Image 2025-02-13 at 14 45 15_c72aee96](https://github.com/user-attachments/assets/a7772bf7-6348-49ef-957b-ddbb1bd4527e)
+
+### 80 epoch<br>
+
+### Failed to match<br>
+
+### with glasses<br>
 
 
-## 🎯 Training
-
-- **Optimizer:** Adam (LR: 0.0002, Betas: (0.5, 0.999))
-- **Loss Functions:**
-  - **GAN Loss**: Measures the realism of generated images.
-  - **Cycle Consistency Loss**: Ensures reversibility of transformations.
-  - **Identity Loss**: Preserves key features in transformations.
-- **Training Setup:**
-  - Runs for **30 epochs** with a batch size of **1**.
-  - Saves the best model checkpoint based on **generator loss**.
-
-## 🔥 Results
-
-- The model successfully generates **cartoonized human faces** while maintaining facial features.
-- Below is a sample output:
-
-  ![Sample Output](./output/final_30_nlr_6rb.png)
 
 ## 🛠 Installation & Usage
 
