@@ -95,11 +95,38 @@ To improve efficiency and performance, our implementation reduces the number of 
 
 ### with glasses<br>
 ![WhatsApp Image 2025-02-13 at 14 45 31_2a7beda5](https://github.com/user-attachments/assets/babda59c-e898-49a1-b4c8-86394cee6eb5)
+---
+## 📌 Results
+### 4 Residual Blocks
+![WhatsApp Image 2025-02-13 at 13 45 21_811b7056](https://github.com/user-attachments/assets/3cded4b5-46e3-4f92-b115-3a643946c9c7)
 
 
+### 6 Residual Blocks
+![WhatsApp Image 2025-02-13 at 13 45 22_d998ec46](https://github.com/user-attachments/assets/f067d1f0-db5e-4e62-b4e2-3ef4d6185316)
 
-## 🛠 Installation & Usage
 
+![WhatsApp Image 2025-02-13 at 13 48 59_5baa95e1](https://github.com/user-attachments/assets/64e95c47-15ac-486f-b9bb-e1a93093b5ec)
+![WhatsApp Image 2025-02-13 at 13 48 59_bf649436](https://github.com/user-attachments/assets/9ef56779-7f17-4da8-87dd-1154c5e27dbf)
+
+---
+## 📌 Reference
+https://www.reddit.com/r/node/comments/yd99nb/alternatives_to_ngrok/ (static domain)
+https://ngrok.com/blog-post/free-static-domains-ngrok-users
+https://stackoverflow.com/questions/63732353/error-could-not-build-wheels-for-opencv-python-which-use-pep-517-and-cannot-be
+https://medium.com/imagescv/what-is-cyclegan-and-how-to-use-it-2bfc772e6195
+https://abdulkaderhelwan.medium.com/how-to-train-a-deep-cyclegan-for-mobile-style-transfer-bd73a16bfc19
+https://medium.com/@chilldenaya/cyclegan-introduction-pytorch-implementation-5b53913741ca
+https://jonathan-hui.medium.com/gan-cyclegan-6a50e7600d7
+https://www.youtube.com/watch?v=Gib_kiXgnvA
+https://arxiv.org/pdf/1406.2661
+https://jonathan-hui.medium.com/gan-whats-generative-adversarial-networks-and-its-application-f39ed278ef09
+https://www.youtube.com/watch?v=5jziBapziYE
+https://arxiv.org/pdf/1703.10593
+https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=9587703
+https://github.com/junyanz/CycleGAN?tab=readme-ov-file
+https://github.com/rish-16/CycleGANsformer
+https://github.com/lmtri1998/Face2Anime-using-CycleGAN
+---
 ### Prerequisites:
 
 - Python 3.8+
@@ -123,18 +150,6 @@ pip install -r requirements.txt
 python cyclegan.py
 ```
 
-## ⚠️ Challenges & Limitations
-
-- **Unpaired Data**: No direct mapping between human and cartoon images.
-- **Preserving Details**: Balancing stylization while maintaining identity.
-- **Training Time**: Takes **4-5 hours per 50 epochs** on a 4GB GPU.
-- **Glasses & Accessories**: Faces with glasses sometimes cause inconsistencies.
-
-## 📚 References
-
-- [CycleGAN Paper](https://arxiv.org/pdf/1703.10593)
-- [CycleGAN GitHub](https://github.com/junyanz/CycleGAN)
-- [Face2Anime CycleGAN](https://github.com/lmtri1998/Face2Anime-using-CycleGAN)
 
 ## 📌 Authors
 
