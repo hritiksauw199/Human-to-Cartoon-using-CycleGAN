@@ -21,11 +21,11 @@ In our project, we leverage CycleGAN to seamlessly translate input images into t
 ## 📌 Dataset
 
 This project uses two datasets:
-
-1. **CartoonSet**: A collection of 2D cartoon avatars with different artistic styles.
+ [Book Recommendation System](https://github.com/ayushichawade/Software-Engineering-Project-Book-Recommendation-System-/blob/main/UI/UI.pdf)
+1. [**CartoonSet**](https://google.github.io/cartoonset/): A collection of 2D cartoon avatars with different artistic styles.
    - 500 images for training
    - 10 images for testing
-2. **Human Dataset**: **Face Mask Lite Dataset** from Kaggle, containing real human face images.
+2. [**Human Dataset**](https://www.kaggle.com/datasets/prasoonkottarathil/face-mask-lite-dataset): **Face Mask Lite Dataset** from Kaggle, containing real human face images.
    - 500 images without masks for training
    - 10 images for testing
 
