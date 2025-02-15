@@ -45,8 +45,7 @@ This project uses two datasets:
 - **Front-Facing Image Selection**: Uses only front-facing images to improve accuracy.
 
 
-![anime](https://github.com/user-attachments/assets/6ad4396e-0308-4369-a821-752e3b7cc3c8)
-![human](https://github.com/user-attachments/assets/9ba72763-b53c-48c7-926e-9d7413ff74d2)
+![anime](https://github.com/user-attachments/assets/6ad4396e-0308-4369-a821-752e3b7cc3c8)   ![human](https://github.com/user-attachments/assets/9ba72763-b53c-48c7-926e-9d7413ff74d2)
 ---
 ## 📌 Architecture
 CycleGAN operates through a cyclic transformation process, where images are converted between two domains—human and cartoon—without requiring paired datasets. It consists of two generators: one that translates human images into cartoon-style images and another that reverses the process, converting cartoons back into realistic human-like images. Alongside these generators, there are two discriminators, each assessing whether an image belongs to the real dataset or has been artificially generated. The adversarial training between these components refines the quality of outputs and ensures that generated images closely resemble the target domain.
