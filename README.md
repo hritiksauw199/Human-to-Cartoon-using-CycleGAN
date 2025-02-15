@@ -85,7 +85,7 @@ To improve efficiency and performance, our implementation reduces the number of 
 ![WhatsApp Image 2025-02-13 at 14 45 15_c72aee96](https://github.com/user-attachments/assets/926184fb-f390-4e9b-bfaa-cb683f71d1a4)
 
 ### using linear schedular<br>
-![WhatsApp Image 2025-02-13 at 14 45 15_c72aee96](https://github.com/user-attachments/assets/a7772bf7-6348-49ef-957b-ddbb1bd4527e)
+![WhatsApp Image 2025-02-13 at 14 45 15_b01c840b](https://github.com/user-attachments/assets/6bf52d84-b0d2-4959-8f61-a2e39311eaa3)
 
 ### 80 epoch<br>
 ![WhatsApp Image 2025-02-13 at 14 45 14_cf5576e8](https://github.com/user-attachments/assets/a3a6d068-489a-4799-bbfc-f817a2b4c554)
