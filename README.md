@@ -1,6 +1,6 @@
-##Learning from Images
+# Learning from Images
 
-##Human-to-Cartoon-using-CycleGAN 
+# Human-to-Cartoon-using-CycleGAN 
 
 ## 📌 Motivation & Reasoning
 We all have an innate desire to visualize ourselves as fictional characters, whether in movies, cartoons, or fantasy worlds. The concept of transforming real-life images into artistic representations intrigued us, pushing us to explore this creative domain. 
