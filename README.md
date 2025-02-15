@@ -54,8 +54,12 @@ A fundamental aspect of CycleGAN is its **cycle consistency loss**, which enforc
 
 To improve efficiency and performance, our implementation reduces the number of residual blocks from 6 to 4, speeding up training while maintaining quality. We also avoid using a learning rate scheduler to simplify training dynamics. Additionally, mixed-precision training with gradient scaling is employed to optimize GPU memory usage and accelerate computations. These enhancements contribute to a more stable and effective CycleGAN model, making it well-suited for high-quality image translation.
 
----
----
+## Generator
+![generator png](https://github.com/user-attachments/assets/3e95ccab-a6e0-4d9f-9d7a-2ba695c407d9)
+
+
+## Discriminator
+![decoder png](https://github.com/user-attachments/assets/2ddb5aea-4d65-47ac-a45a-2b6d8a0a1b8e)
 
 *(More sections to be added later, such as Implementation, Technologies Used, Dataset, etc.)* 📌
 
