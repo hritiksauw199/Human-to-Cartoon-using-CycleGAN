@@ -109,23 +109,25 @@ To improve efficiency and performance, our implementation reduces the number of 
 ![WhatsApp Image 2025-02-13 at 13 48 59_bf649436](https://github.com/user-attachments/assets/9ef56779-7f17-4da8-87dd-1154c5e27dbf)
 
 ---
-## 📌 Reference
-https://www.reddit.com/r/node/comments/yd99nb/alternatives_to_ngrok/ (static domain)<br>
-https://ngrok.com/blog-post/free-static-domains-ngrok-users<br>
-https://stackoverflow.com/questions/63732353/error-could-not-build-wheels-for-opencv-python-which-use-pep-517-and-cannot-be<br>
-https://medium.com/imagescv/what-is-cyclegan-and-how-to-use-it-2bfc772e6195<br>
-https://abdulkaderhelwan.medium.com/how-to-train-a-deep-cyclegan-for-mobile-style-transfer-bd73a16bfc19<br>
-https://medium.com/@chilldenaya/cyclegan-introduction-pytorch-implementation-5b53913741ca<br>
-https://jonathan-hui.medium.com/gan-cyclegan-6a50e7600d7<br>
-https://www.youtube.com/watch?v=Gib_kiXgnvA<br>
-https://arxiv.org/pdf/1406.2661<br>
-https://jonathan-hui.medium.com/gan-whats-generative-adversarial-networks-and-its-application-f39ed278ef09<br>
-https://www.youtube.com/watch?v=5jziBapziYE<br>
-https://arxiv.org/pdf/1703.10593<br>
-https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=9587703<br>
-https://github.com/junyanz/CycleGAN?tab=readme-ov-file<br>
-https://github.com/rish-16/CycleGANsformer<br>
-https://github.com/lmtri1998/Face2Anime-using-CycleGAN<br>
+## 📌 References
+
+https://www.reddit.com/r/node/comments/yd99nb/alternatives_to_ngrok/ (static domain) <br>
+https://ngrok.com/blog-post/free-static-domains-ngrok-users <br>
+https://stackoverflow.com/questions/63732353/error-could-not-build-wheels-for-opencv-python-which-use-pep-517-and-cannot-be <br>
+https://medium.com/imagescv/what-is-cyclegan-and-how-to-use-it-2bfc772e6195 <br>
+https://abdulkaderhelwan.medium.com/how-to-train-a-deep-cyclegan-for-mobile-style-transfer-bd73a16bfc19 <br>
+https://medium.com/@chilldenaya/cyclegan-introduction-pytorch-implementation-5b53913741ca <br>
+https://jonathan-hui.medium.com/gan-cyclegan-6a50e7600d7 <br>
+https://www.youtube.com/watch?v=Gib_kiXgnvA <br>
+https://arxiv.org/pdf/1406.2661 <br>
+https://jonathan-hui.medium.com/gan-whats-generative-adversarial-networks-and-its-application-f39ed278ef09 <br>
+https://www.youtube.com/watch?v=5jziBapziYE <br>
+https://arxiv.org/pdf/1703.10593 <br>
+https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=9587703 <br>
+https://github.com/junyanz/CycleGAN?tab=readme-ov-file <br>
+https://github.com/rish-16/CycleGANsformer <br>
+https://github.com/lmtri1998/Face2Anime-using-CycleGAN <br>
+
 ---
 ### Prerequisites:
 
