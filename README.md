@@ -88,10 +88,13 @@ To improve efficiency and performance, our implementation reduces the number of 
 ![WhatsApp Image 2025-02-13 at 14 45 15_c72aee96](https://github.com/user-attachments/assets/a7772bf7-6348-49ef-957b-ddbb1bd4527e)
 
 ### 80 epoch<br>
+![WhatsApp Image 2025-02-13 at 14 45 14_cf5576e8](https://github.com/user-attachments/assets/a3a6d068-489a-4799-bbfc-f817a2b4c554)
 
 ### Failed to match<br>
+![WhatsApp Image 2025-02-13 at 14 45 14_430475c2](https://github.com/user-attachments/assets/e37342f6-ec45-4e61-b88b-3c65ad84d9b2)
 
 ### with glasses<br>
+![WhatsApp Image 2025-02-13 at 14 45 31_2a7beda5](https://github.com/user-attachments/assets/babda59c-e898-49a1-b4c8-86394cee6eb5)
 
 
 
