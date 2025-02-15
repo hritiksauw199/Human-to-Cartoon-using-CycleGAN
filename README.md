@@ -35,16 +35,13 @@ This project uses two datasets:
 - **Front-Facing Image Selection**: Uses only front-facing images to improve accuracy.
 
 ## 📌 Architecture
-CycleGAN consists of two generators and two discriminators working together to enable image transformation between domains. The first generator, responsible for converting human images into cartoon-style images, ensures that the generated outputs resemble the target cartoon domain. The second generator performs the inverse operation, converting cartoon images back into realistic human images. 
+CycleGAN operates through a cyclic transformation process, where images are converted between two domains—human and cartoon—without requiring paired datasets. It consists of two generators: one that translates human images into cartoon-style images and another that reverses the process, converting cartoons back into realistic human-like images. Alongside these generators, there are two discriminators, each assessing whether an image belongs to the real dataset or has been artificially generated. The adversarial training between these components refines the quality of outputs and ensures that generated images closely resemble the target domain.
 
-Each generator is accompanied by a discriminator that evaluates whether an image belongs to the real dataset or is a generated sample. The adversarial loss between these components helps refine the output quality, making the transformations more believable. 
+A fundamental aspect of CycleGAN is its **cycle consistency loss**, which enforces the idea that an image should retain its essential features when transformed from one domain to another and then back again. This bidirectional consistency helps prevent mode collapse and unwanted distortions. The residual blocks within the generators play a crucial role in feature extraction by capturing high-level patterns in the input images. These blocks allow the model to preserve fine details and textures, leading to more realistic and visually coherent transformations.
 
-The transformation occurs in cycles: a human image is first converted into a cartoon image using Generator A. The generated cartoon image is then passed through Generator B to reconstruct the original human image. The same cycle applies in reverse, where a cartoon image is transformed into a human image and then reconstructed back into a cartoon. This cycle ensures that important visual features are retained, making the transformations more stable and realistic.
+To improve efficiency and performance, our implementation reduces the number of residual blocks from 6 to 4, speeding up training while maintaining quality. We also avoid using a learning rate scheduler to simplify training dynamics. Additionally, mixed-precision training with gradient scaling is employed to optimize GPU memory usage and accelerate computations. These enhancements contribute to a more stable and effective CycleGAN model, making it well-suited for high-quality image translation.
 
-A key component of CycleGAN is **cycle consistency loss**, which ensures that when an image is transformed from one domain to another and back, it remains close to its original form. This bidirectional mapping improves stability and prevents unwanted distortions in the generated images. Additionally, **residual blocks** play a crucial role in feature extraction, helping the network preserve important structural and style-related information while performing domain translation. 
-
-To enhance performance, our model incorporates optimizations such as reducing the number of residual blocks from 6 to 4 for faster training and omitting a learning rate scheduler for simplicity. Additionally, we employ mixed-precision training with gradient scaling to efficiently utilize GPU memory and speed up computations. 
-
+---
 ---
 
 *(More sections to be added later, such as Implementation, Technologies Used, Dataset, etc.)* 📌
