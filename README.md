@@ -17,7 +17,17 @@ CycleGAN, on the other hand, is designed to work with unpaired data, making it p
 In our project, we leverage CycleGAN to seamlessly translate input images into their artistic representations while maintaining essential features. This approach enables us to generate high-quality, visually appealing transformations that stay true to the original content. 
 
 ---
+## 📌 Our Approach 
+In our approach, we modified the CycleGAN architecture to enhance training speed and reduce memory usage, while maintaining output quality.<br>
+ 
+### Key differences include:
+Residual Blocks: Reduced the number of residual blocks in the generator from 6 to 4 to simplify the model and speed up training.<br>
 
+Learning Rate Scheduler: Omitted the learning rate scheduler from the original design to streamline the model.<br>
+
+Mixed-Precision Training: Incorporated gradient scaling with mixed-precision training to improve efficiency, reduce memory usage, and handle larger models or datasets without exceeding GPU capacity.<br>
+
+---
 ## 📌 Dataset
 
 This project uses two datasets:
