@@ -35,19 +35,20 @@ This project uses two datasets:
 - **Front-Facing Image Selection**: Uses only front-facing images to improve accuracy.
 
 ## 📌 Architecture
+CycleGAN consists of two generators and two discriminators working together to enable image transformation between domains. The first generator, responsible for converting human images into cartoon-style images, ensures that the generated outputs resemble the target cartoon domain. The second generator performs the inverse operation, converting cartoon images back into realistic human images. 
 
-### CycleGAN consists of:
+Each generator is accompanied by a discriminator that evaluates whether an image belongs to the real dataset or is a generated sample. The adversarial loss between these components helps refine the output quality, making the transformations more believable. 
 
-- **Generator A (Human → Cartoon)**: Converts human images into cartoon-style images.
-- **Generator B (Cartoon → Human)**: Converts cartoon images back into human-like images.
-- **Discriminator A & B**: Distinguish real human/cartoon images from generated ones.
-- **Cycle Consistency Loss**: Ensures that transformations are reversible while preserving identity.
+The transformation occurs in cycles: a human image is first converted into a cartoon image using Generator A. The generated cartoon image is then passed through Generator B to reconstruct the original human image. The same cycle applies in reverse, where a cartoon image is transformed into a human image and then reconstructed back into a cartoon. This cycle ensures that important visual features are retained, making the transformations more stable and realistic.
 
-### Model Enhancements:
+A key component of CycleGAN is **cycle consistency loss**, which ensures that when an image is transformed from one domain to another and back, it remains close to its original form. This bidirectional mapping improves stability and prevents unwanted distortions in the generated images. Additionally, **residual blocks** play a crucial role in feature extraction, helping the network preserve important structural and style-related information while performing domain translation. 
 
-- **Reduced Residual Blocks**: Uses 4 instead of 6 to improve training speed.
-- **No Learning Rate Scheduler**: Simplifies model training.
-- **Mixed-Precision Training**: Uses gradient scaling for efficient GPU memory utilization.
+To enhance performance, our model incorporates optimizations such as reducing the number of residual blocks from 6 to 4 for faster training and omitting a learning rate scheduler for simplicity. Additionally, we employ mixed-precision training with gradient scaling to efficiently utilize GPU memory and speed up computations. 
+
+---
+
+*(More sections to be added later, such as Implementation, Technologies Used, Dataset, etc.)* 📌
+
 
 ## 🎯 Training
 
