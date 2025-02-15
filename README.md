@@ -21,7 +21,6 @@ In our project, we leverage CycleGAN to seamlessly translate input images into t
 ## 📌 Dataset
 
 This project uses two datasets:
- [Book Recommendation System](https://github.com/ayushichawade/Software-Engineering-Project-Book-Recommendation-System-/blob/main/UI/UI.pdf)
 1. [**CartoonSet**](https://google.github.io/cartoonset/): A collection of 2D cartoon avatars with different artistic styles.
    - 500 images for training
    - 10 images for testing
