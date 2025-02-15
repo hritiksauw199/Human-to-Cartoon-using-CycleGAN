@@ -9,55 +9,16 @@ Initially, we set out to generate LEGO-style versions of images, but after facin
 
 Determined to find a better solution, we pivoted to cartoon-style transformations. This shift allowed us to refine our model, improve learning mechanisms, and achieve more meaningful results while still upholding the essence of artistic reimagination. 
 
-## Understanding GANs and CycleGAN
+## 📌 Understanding GANs and CycleGAN
 Generative Adversarial Networks (GANs) are a class of deep learning models that consist of two neural networks—a generator and a discriminator—competing against each other. The generator attempts to create realistic images, while the discriminator evaluates them against real samples, leading to continuous improvements in quality. Traditional GANs require paired data, where input-output mappings are clearly defined. This necessity makes them ideal for applications where exact transformations between images are available.
 
 CycleGAN, on the other hand, is designed to work with unpaired data, making it particularly useful for tasks where finding corresponding image pairs is impractical. Unlike a standard GAN, CycleGAN consists of two generator-discriminator pairs that learn bidirectional mappings between two domains. It introduces a cycle consistency loss, which ensures that an image transformed from domain A to domain B and back to A remains unchanged. This mechanism helps maintain realistic translations, making CycleGAN highly effective for style transfer applications such as converting real-world images into cartoons. 
 
 In our project, we leverage CycleGAN to seamlessly translate input images into their artistic representations while maintaining essential features. This approach enables us to generate high-quality, visually appealing transformations that stay true to the original content. 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## 📌 Table of Contents
-
-- [Introduction](#introduction)
-- [Dataset](#dataset)
-- [Architecture](#architecture)
-- [Training](#training)
-- [Results](#results)
-- [Installation & Usage](#installation--usage)
-- [Challenges & Limitations](#challenges--limitations)
-- [References](#references)
-
 ---
 
-## 📚 Introduction
-
-**Image-to-Image Translation** refers to the task of transforming an image from one domain to another while preserving its content.  
-This project aims to **convert real human faces into cartoon-style images** using **CycleGAN**.
-
-### Why CycleGAN?
-
-- Traditional GANs require **paired datasets** (where each input image has a corresponding output), which is often unavailable for human-to-cartoon translation.
-- **CycleGAN** overcomes this by using **unpaired datasets** and cycle consistency loss, ensuring that a transformed image can be mapped back to its original domain.
-
-## 📊 Dataset
+## 📌 Dataset
 
 This project uses two datasets:
 
@@ -68,15 +29,15 @@ This project uses two datasets:
    - 500 images without masks for training
    - 10 images for testing
 
-### Data Preprocessing:
+### Data Augmentation:
 
 - **White Background Removal**: Ensures consistency with transparent cartoon backgrounds.
 - **Glasses Removal**: Prevents inconsistencies in translation.
 - **Front-Facing Image Selection**: Uses only front-facing images to improve accuracy.
 
-## 🏰 Architecture
+## 📌 Architecture
 
-CycleGAN consists of:
+### CycleGAN consists of:
 
 - **Generator A (Human → Cartoon)**: Converts human images into cartoon-style images.
 - **Generator B (Cartoon → Human)**: Converts cartoon images back into human-like images.
