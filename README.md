@@ -15,9 +15,10 @@ Generative Adversarial Networks (GANs) are a class of deep learning models that 
 
 CycleGAN, on the other hand, is designed to work with unpaired data, making it particularly useful for tasks where finding corresponding image pairs is impractical. Unlike a standard GAN, CycleGAN consists of two generator-discriminator pairs that learn bidirectional mappings between two domains. It introduces a cycle consistency loss, which ensures that an image transformed from domain A to domain B and back to A remains unchanged. This mechanism helps maintain realistic translations, making CycleGAN highly effective for style transfer applications such as converting real-world images into cartoons. 
 
+![](images/cyclegan.png)
+
 In our project, we leverage CycleGAN to seamlessly translate input images into their artistic representations while maintaining essential features. This approach enables us to generate high-quality, visually appealing transformations that stay true to the original content. 
 
-![](images/cyclegan.png)
 
 ---
 ## 📌 Dataset
@@ -93,6 +94,14 @@ To improve efficiency and performance, our implementation reduces the number of 
 ### 6 Residual Blocks
 ![](images/6%20residual%20block%20output.png)
 
+The 4 residual block model successfully generated cartoonized images, demonstrating that even with fewer residual blocks, the model retained its ability to learn the transformation. However, certain challenges emerged:
+
+- The 4 RB model struggled with backgrounds, failing to properly separate the subject from the surroundings. This resulted in inconsistent or incomplete cartoonization when the subject was not in a plain setting.
+- Hair color reproduction was noticeably weaker compared to the 6 RB model. The generated hair tones often appeared faded or incorrect, suggesting that fewer residual blocks limited the model’s capacity to capture fine details.
+- General structure and facial features were preserved, but the 6 RB model produced more refined outputs with better texture consistency and color accuracy.
+
+The 6 residual block model, as used in the original paper, exhibited superior results, particularly in handling hair color and background effects. While not perfect, it was better at distinguishing the subject from the background and maintaining color consistency.
+
 ## 📌 Loss Functions
 
 ### 4 RB Loss/Residual Plot
@@ -101,43 +110,47 @@ To improve efficiency and performance, our implementation reduces the number of 
 ### 6 RB Loss/Residual Plot
 ![](images/loss_plot_6_Residual.png)
 
+Both models were trained for only 50 epochs and with a small dataset due to computational limitations. Given these constraints, the 4 RB model was still able to achieve reasonable results, indicating that with more training data and longer training cycles, it could potentially match the performance of the 6 RB model.
+
+This suggests that a 4 residual block architecture, when properly trained, could serve as a computationally efficient alternative, reducing resource usage without significant loss of quality. Further optimization strategies could help bridge the gap between 4 RB and 6 RB performance, making the lighter model a viable choice for real-world applications.
+
 ---
 
 ## 📌 Challenges
 ### with weights<br>
-![WhatsApp Image 2025-02-13 at 14 45 15_c72aee96](https://github.com/user-attachments/assets/926184fb-f390-4e9b-bfaa-cb683f71d1a4)
+![](images/fails/using%20weights.png)
 
 ### using linear schedular<br>
-![WhatsApp Image 2025-02-13 at 14 45 15_b01c840b](https://github.com/user-attachments/assets/6bf52d84-b0d2-4959-8f61-a2e39311eaa3)
+![](images/fails/using%20learning%20rate%20scheduler.png)
 
 ### 80 epoch<br>
-![WhatsApp Image 2025-02-13 at 14 45 14_cf5576e8](https://github.com/user-attachments/assets/a3a6d068-489a-4799-bbfc-f817a2b4c554)
+![](images/fails/80%20epoch.png)
 
 ### Failed to match<br>
-![WhatsApp Image 2025-02-13 at 14 45 14_430475c2](https://github.com/user-attachments/assets/e37342f6-ec45-4e61-b88b-3c65ad84d9b2)
+![](images/fails/lego%20output.png)
 
 ### with glasses<br>
-![WhatsApp Image 2025-02-13 at 14 45 31_2a7beda5](https://github.com/user-attachments/assets/babda59c-e898-49a1-b4c8-86394cee6eb5)
+![](images/fails/glasses.png)
 
 ---
 ## 📌 References
 
-https://www.reddit.com/r/node/comments/yd99nb/alternatives_to_ngrok/ (static domain) <br>
-https://ngrok.com/blog-post/free-static-domains-ngrok-users <br>
-https://stackoverflow.com/questions/63732353/error-could-not-build-wheels-for-opencv-python-which-use-pep-517-and-cannot-be <br>
-https://medium.com/imagescv/what-is-cyclegan-and-how-to-use-it-2bfc772e6195 <br>
-https://abdulkaderhelwan.medium.com/how-to-train-a-deep-cyclegan-for-mobile-style-transfer-bd73a16bfc19 <br>
-https://medium.com/@chilldenaya/cyclegan-introduction-pytorch-implementation-5b53913741ca <br>
-https://jonathan-hui.medium.com/gan-cyclegan-6a50e7600d7 <br>
-https://www.youtube.com/watch?v=Gib_kiXgnvA <br>
-https://arxiv.org/pdf/1406.2661 <br>
-https://jonathan-hui.medium.com/gan-whats-generative-adversarial-networks-and-its-application-f39ed278ef09 <br>
-https://www.youtube.com/watch?v=5jziBapziYE <br>
-https://arxiv.org/pdf/1703.10593 <br>
-https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=9587703 <br>
-https://github.com/junyanz/CycleGAN?tab=readme-ov-file <br>
-https://github.com/rish-16/CycleGANsformer <br>
-https://github.com/lmtri1998/Face2Anime-using-CycleGAN <br>
+1. https://www.reddit.com/r/node/comments/yd99nb/alternatives_to_ngrok/ (static domain) <br>
+2. https://ngrok.com/blog-post/free-static-domains-ngrok-users <br>
+3. https://stackoverflow.com/questions/63732353/error-could-not-build-wheels-for-opencv-python-which-use-pep-517-and-cannot-be <br>
+4. https://medium.com/imagescvwhat-is-cyclegan-and-how-to-use-it-2bfc772e6195 <br>
+5. https://abdulkaderhelwan.medium.com/how-to-train-a-deep-cyclegan-for-mobile-style-transfer-bd73a16bfc19 <br>
+6. https://medium.com/@chilldenaya/cyclegan-introduction-pytorch-implementation-5b53913741ca <br>
+7. https://jonathan-hui.medium.com/gan-cyclegan-6a50e7600d7 <br>
+8. https://www.youtube.com/watch?v=Gib_kiXgnvA <br>
+9. https://arxiv.org/pdf/1406.2661 <br>
+10. https://jonathan-hui.medium.com/gan-whats-generative-adversarial-networks-and-its-application-f39ed278ef09 <br>
+11. https://www.youtube.com/watch?v=5jziBapziYE <br>
+12. https://arxiv.org/pdf/1703.10593 <br>
+13. https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=9587703 <br>
+14. https://github.com/junyanz/CycleGAN?tab=readme-ov-file <br>
+15. https://github.com/rish-16/CycleGANsformer <br>
+16. https://github.com/lmtri1998/Face2Anime-using-CycleGAN <br>
 
 ---
 ### Prerequisites:
@@ -148,6 +161,7 @@ https://github.com/lmtri1998/Face2Anime-using-CycleGAN <br>
 - Pillow
 - tqdm
 - matplotlib
+- cuda
 
 ### Installation:
 
